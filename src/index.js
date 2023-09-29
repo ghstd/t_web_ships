@@ -30,5 +30,5 @@ const config = {
 const tg = window.Telegram.WebApp
 const game = new Phaser.Game(config)
 
-console.log(tg.initData)
-console.log(tg.initDataUnsafe)
+console.log('initData:', tg.initData)
+console.log('initDataUnsafe:', tg.initDataUnsafe)

@@ -36,7 +36,7 @@ export default class GameScene extends Phaser.Scene {
 
 		this.input.on('pointerup', function (pointer) {
 			const tile = map.getTileAtWorldXY(pointer.worldX, pointer.worldY)
-			console.log(tile)
+			// console.log(tile)
 		}, this)
 	}
 
