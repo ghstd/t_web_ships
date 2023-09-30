@@ -53,7 +53,17 @@ export default class GameScene extends Phaser.Scene {
 		this.input.on('pointerdown', function (pointer) {
 			const tile = map.getTileAtWorldXY(pointer.worldX, pointer.worldY)
 			const result = translateTemplate[tile.y - 1][tile.x - 1]
-			tg.sendData(result)
+			fetch('https://tebot.netlify.app/.netlify/functions/bot', {
+				method: 'POST',
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({
+					myMark: 'webapp',
+					id: tg.initDataUnsafe.query_id,
+					result
+				})
+			})
 		}, this)
 	}
 
