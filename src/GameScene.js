@@ -37,9 +37,9 @@ export default class GameScene extends Phaser.Scene {
 
 		this.input.on('pointerdown', function (pointer) {
 			const tile = map.getTileAtWorldXY(pointer.worldX, pointer.worldY)
-			const result = translateTemplate[tile.y - 1][tile.x - 1]
-			console.log(result)
-			tg.sendData(result)
+			// const result = translateTemplate[tile.y - 1][tile.x - 1]
+			// console.log(result)
+			// tg.sendData(result)
 		}, this)
 	}
 

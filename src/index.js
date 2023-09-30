@@ -46,12 +46,12 @@ const translateTemplate = [
 const tg = window.Telegram.WebApp
 const game = new Phaser.Game(config)
 
-const sendBtn = document.getElementById('send')
-sendBtn.onclick = () => {
-	try {
-		tg.sendData('hi from webapp')
-	} catch (error) {
-		console.log('in sendData: ', error)
-	}
-}
+// const sendBtn = document.getElementById('send')
+// sendBtn.onclick = () => {
+// 	try {
+// 		tg.sendData('hi from webapp')
+// 	} catch (error) {
+// 		console.log('in sendData: ', error)
+// 	}
+// }
 
