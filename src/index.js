@@ -39,5 +39,3 @@ sendBtn.onclick = () => {
 	}
 }
 
-console.log('initDataUnsafe:', tg.initDataUnsafe)
-console.log('backgroundColor: ', tg.backgroundColor)
