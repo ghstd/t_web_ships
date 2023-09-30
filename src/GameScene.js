@@ -1,4 +1,5 @@
 import Phaser from 'phaser'
+import { transformWithEsbuild } from 'vite'
 
 const URL = 'http://localhost:5173'
 
@@ -36,7 +37,9 @@ export default class GameScene extends Phaser.Scene {
 
 		this.input.on('pointerdown', function (pointer) {
 			const tile = map.getTileAtWorldXY(pointer.worldX, pointer.worldY)
-			console.log(tile)
+			const result = translateTemplate[tile.y - 1][tile.x - 1]
+			console.log(result)
+			tg.sendData(result)
 		}, this)
 	}
 
