@@ -30,5 +30,14 @@ const config = {
 const tg = window.Telegram.WebApp
 const game = new Phaser.Game(config)
 
-console.log('initData:', tg.initData)
+const sendBtn = document.getElementById('send')
+sendBtn.onclick = () => {
+	try {
+		tg.sendData('hi from webapp')
+	} catch (error) {
+		console.log('in sendData: ', error)
+	}
+}
+
 console.log('initDataUnsafe:', tg.initDataUnsafe)
+console.log('backgroundColor: ', tg.backgroundColor)
