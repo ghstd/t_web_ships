@@ -58,7 +58,7 @@ export default class GameScene extends Phaser.Scene {
 			const map = this.make.tilemap({ key: 'map' })
 			const tileset = map.addTilesetImage('sheet')
 			map.createLayer('background', tileset)
-
+			console.log(this.player.playerField)
 			const playerField = map.createBlankLayer('ships', tileset)
 			playerField.putTilesAt(this.player.playerField, 1, 1)
 
