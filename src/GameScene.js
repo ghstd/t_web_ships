@@ -48,7 +48,7 @@ export default class GameScene extends Phaser.Scene {
 		}
 	}
 
-	create() {
+	async create() {
 		console.log('player in create', this.player)
 		if (!this.player.data) {
 			console.log('no player data')
