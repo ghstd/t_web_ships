@@ -29,6 +29,7 @@ export default class GameScene extends Phaser.Scene {
 		this.load.tilemapTiledJSON('map', '/map.json')
 
 		const id = tg.initDataUnsafe.user?.id
+		console.log('id', id)
 		if (!id) {
 			return
 		}
@@ -41,13 +42,14 @@ export default class GameScene extends Phaser.Scene {
 				body: JSON.stringify({ id })
 			})
 			this.player = await response.json()
+			console.log('player in preload', this.player)
 		} catch (error) {
 			console.log('fetch player in preload: ', error)
 		}
 	}
 
 	create() {
-		console.log('player', this.player)
+		console.log('player in create', this.player)
 		if (!this.player.data) {
 			console.log('no player data')
 		}
