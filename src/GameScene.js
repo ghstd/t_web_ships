@@ -57,8 +57,9 @@ export default class GameScene extends Phaser.Scene {
 		} else {
 
 			this.scale.resize(352, 352)
+
 			tg.MainButton.onClick(async () => {
-				tg.MainButton.setText('...saving')
+				tg.MainButton.setText('...')
 				await this.updatePlayerField(this.player.id, JSON.stringify(this.player.playerField))
 				tg.close()
 			})
@@ -79,8 +80,7 @@ export default class GameScene extends Phaser.Scene {
 				}
 
 				if (checkField(this.player.playerField).correct) {
-					console.log('correct')
-					tg.MainButton.setText('сохранить?')
+					tg.MainButton.setText('сохранить')
 					tg.MainButton.show()
 				} else {
 					tg.MainButton.hide()
@@ -126,7 +126,7 @@ export default class GameScene extends Phaser.Scene {
 				headers: {
 					"Content-Type": "application/json"
 				},
-				body: { id, playerField }
+				body: JSON.stringify({ id, playerField })
 			})
 			const result = await response.json()
 			console.log('result', result)
