@@ -4,7 +4,7 @@ import GameScene from './GameScene'
 const config = {
 	type: Phaser.AUTO,
 	width: 352,
-	height: 352,
+	height: 736,
 	scene: [GameScene],
 	parent: 'game',
 	scale: {

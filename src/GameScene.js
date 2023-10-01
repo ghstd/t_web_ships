@@ -54,16 +54,30 @@ export default class GameScene extends Phaser.Scene {
 
 		if (this.player.ready) {
 
-		} else {
 			const map = this.make.tilemap({ key: 'map' })
 			const tileset = map.addTilesetImage('sheet')
 			map.createLayer('background', tileset)
 
-			const arr = this.player.playerField.map((row) => row.map((i) => i + 1))
-			console.log(arr)
+			const targetFieldArr = this.player.targetField.map((row) => row.map((i) => i + 1))
 
-			const playerField = map.createBlankLayer('ships', tileset)
-			playerField.putTilesAt(arr, 1, 1)
+			const targetFieldLayer = map.createBlankLayer('targets', tileset)
+			targetFieldLayer.putTilesAt(targetFieldArr, 1, 1)
+
+			const playerFieldArr = this.player.playerField.map((row) => row.map((i) => i + 1))
+
+			const playerFieldLayer = map.createBlankLayer('ships', tileset)
+			playerFieldLayer.putTilesAt(playerFieldArr, 11, 1)
+
+		} else {
+
+			const map = this.make.tilemap({ key: 'map' })
+			const tileset = map.addTilesetImage('sheet')
+			map.createLayer('background', tileset)
+
+			const playerFieldArr = this.player.playerField.map((row) => row.map((i) => i + 1))
+
+			const playerFieldLayer = map.createBlankLayer('ships', tileset)
+			playerFieldLayer.putTilesAt(playerFieldArr, 1, 1)
 
 			this.input.on('pointerup', function (pointer) {
 				const tile = map.getTileAtWorldXY(pointer.worldX, pointer.worldY)
