@@ -18,8 +18,6 @@ const translateTemplate = [
 
 const tg = window.Telegram.WebApp
 
-
-
 export default class GameScene extends Phaser.Scene {
 	constructor() {
 		super('Game')
@@ -93,8 +91,7 @@ export default class GameScene extends Phaser.Scene {
 
 
 	async getPlayer() {
-		// const id = tg.initDataUnsafe.user?.id
-		const id = 545166583
+		const id = tg.initDataUnsafe.user?.id
 
 		if (!id) {
 			return null
