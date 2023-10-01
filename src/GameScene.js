@@ -25,8 +25,10 @@ export default class GameScene extends Phaser.Scene {
 	init() { }
 
 	preload() {
-		this.load.image('sheet', '/sheet.png')
-		this.load.tilemapTiledJSON('map', '/map.json')
+		this.load.image('scales', '/scales.png')
+		this.load.image('objects', '/objects.png')
+		this.load.tilemapTiledJSON('map_1', '/map.json')
+		this.load.tilemapTiledJSON('map_2', '/map.json')
 	}
 
 	async create() {
@@ -53,30 +55,34 @@ export default class GameScene extends Phaser.Scene {
 		}
 
 		if (this.player.ready) {
+			console.log('ready', this.player.ready)
 
-			const map = this.make.tilemap({ key: 'map' })
-			const tileset = map.addTilesetImage('sheet')
-			map.createLayer('background', tileset)
+			const map = this.make.tilemap({ key: 'map_2' })
+			const scalesTileset = map.addTilesetImage('scales')
+			const objectsTileset = map.addTilesetImage('objects')
+			map.createLayer('scales', scalesTileset)
 
 			const targetFieldArr = this.player.targetField.map((row) => row.map((i) => i + 1))
 
-			const targetFieldLayer = map.createBlankLayer('targets', tileset)
+			const targetFieldLayer = map.createBlankLayer('targets', objectsTileset)
 			targetFieldLayer.putTilesAt(targetFieldArr, 1, 1)
 
 			const playerFieldArr = this.player.playerField.map((row) => row.map((i) => i + 1))
 
-			const playerFieldLayer = map.createBlankLayer('ships', tileset)
+			const playerFieldLayer = map.createBlankLayer('ships', objectsTileset)
 			playerFieldLayer.putTilesAt(playerFieldArr, 11, 1)
 
 		} else {
+			console.log('ready', this.player.ready)
 
-			const map = this.make.tilemap({ key: 'map' })
-			const tileset = map.addTilesetImage('sheet')
-			map.createLayer('background', tileset)
+			const map = this.make.tilemap({ key: 'map_1' })
+			const scalesTileset = map.addTilesetImage('scales')
+			const objectsTileset = map.addTilesetImage('objects')
+			map.createLayer('background', scalesTileset)
 
 			const playerFieldArr = this.player.playerField.map((row) => row.map((i) => i + 1))
 
-			const playerFieldLayer = map.createBlankLayer('ships', tileset)
+			const playerFieldLayer = map.createBlankLayer('ships', objectsTileset)
 			playerFieldLayer.putTilesAt(playerFieldArr, 1, 1)
 
 			this.input.on('pointerup', function (pointer) {
