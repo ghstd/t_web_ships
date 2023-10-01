@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
 
-const URL = 'http://localhost:5173'
+const URL = 'https://tel-server-firebase.onrender.com'
 
 const translateTemplate = [
 	['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10'],
@@ -16,7 +16,6 @@ const translateTemplate = [
 ]
 
 const tg = window.Telegram.WebApp
-console.log(tg)
 
 export default class GameScene extends Phaser.Scene {
 	constructor() {
@@ -25,46 +24,62 @@ export default class GameScene extends Phaser.Scene {
 
 	init() { }
 
-	preload() {
-		// this.load.image('sheet', `${URL}/assets/sheet.png`)
-		// this.load.tilemapTiledJSON('map', `${URL}/assets/map.json`)
+	async preload() {
 		this.load.image('sheet', '/sheet.png')
 		this.load.tilemapTiledJSON('map', '/map.json')
-	}
 
-	create() {
-		const map = this.make.tilemap({ key: 'map' })
-		const tileset = map.addTilesetImage('sheet')
-		const background = map.createLayer('background', tileset)
-		const ships = map.createBlankLayer('ships', tileset)
-		const result = ships.putTilesAt([
-			[1, 6, 6, 6, 6, 6, 6, 6, 6, 6],
-			[6, 2, 6, 6, 6, 6, 6, 6, 6, 6],
-			[6, 6, 3, 6, 6, 6, 6, 6, 6, 6],
-			[6, 6, 6, 4, 6, 6, 6, 6, 6, 6],
-			[6, 6, 6, 6, 7, 6, 6, 6, 6, 6],
-			[6, 6, 6, 6, 6, 8, 6, 6, 6, 6],
-			[6, 6, 6, 6, 6, 6, 6, 6, 6, 6],
-			[6, 6, 6, 6, 6, 6, 6, 6, 6, 6],
-			[6, 6, 6, 6, 6, 6, 6, 6, 6, 6],
-			[6, 6, 6, 6, 6, 6, 6, 6, 6, 6]
-		], 1, 1)
-
-		this.input.on('pointerdown', function (pointer) {
-			const tile = map.getTileAtWorldXY(pointer.worldX, pointer.worldY)
-			const result = translateTemplate[tile.y - 1][tile.x - 1]
-			fetch('https://tebot.netlify.app/.netlify/functions/bot', {
+		const id = tg.initDataUnsafe.user?.id
+		if (!id) {
+			return
+		}
+		try {
+			const response = await fetch(`${URL}/dbGetPlayerByUserId`, {
 				method: 'POST',
 				headers: {
 					"Content-Type": "application/json"
 				},
-				body: JSON.stringify({
-					myMark: 'webapp',
-					id: tg.initDataUnsafe.query_id,
-					result
-				})
+				body: JSON.stringify({ id })
 			})
-		}, this)
+			this.player = await response.json()
+		} catch (error) {
+			console.log('fetch player in preload: ', error)
+		}
+	}
+
+	create() {
+		if (!this.player.data) {
+			console.log('no player data')
+		}
+
+		if (this.player.ready) {
+
+		} else {
+			const map = this.make.tilemap({ key: 'map' })
+			const tileset = map.addTilesetImage('sheet')
+			map.createLayer('background', tileset)
+
+			const playerField = map.createBlankLayer('ships', tileset)
+			playerField.putTilesAt(this.player.playerField, 1, 1)
+
+			this.input.on('pointerup', function (pointer) {
+				const tile = map.getTileAtWorldXY(pointer.worldX, pointer.worldY)
+				const result = translateTemplate[tile.y - 1][tile.x - 1]
+				console.log(result)
+
+				// fetch('https://tebot.netlify.app/.netlify/functions/bot', {
+				// 	method: 'POST',
+				// 	headers: {
+				// 		"Content-Type": "application/json"
+				// 	},
+				// 	body: JSON.stringify({
+				// 		myMark: 'webapp',
+				// 		id: tg.initDataUnsafe.query_id,
+				// 		result
+				// 	})
+				// })
+			}, this)
+
+		}
 	}
 
 	update(time, dt) {
