@@ -16,7 +16,10 @@ const translateTemplate = [
 	['J1', 'J2', 'J3', 'J4', 'J5', 'J6', 'J7', 'J8', 'J9', 'J10']
 ]
 
-// const tg = window.Telegram.WebApp
+const tg = window.Telegram.WebApp
+tg.MainButton.onClick(() => {
+	tg.MainButton.setText('...saving')
+})
 
 export default class GameScene extends Phaser.Scene {
 	constructor() {
@@ -70,6 +73,7 @@ export default class GameScene extends Phaser.Scene {
 				}
 
 				if (checkField(this.player.playerField).correct) {
+					console.log('correct')
 					tg.MainButton.setText('сохранить?')
 					tg.MainButton.show()
 				} else {
