@@ -17,9 +17,8 @@ const translateTemplate = [
 ]
 
 const tg = window.Telegram.WebApp
-tg.MainButton.onClick(() => {
-	tg.MainButton.setText('...saving')
-})
+
+
 
 export default class GameScene extends Phaser.Scene {
 	constructor() {
@@ -57,8 +56,15 @@ export default class GameScene extends Phaser.Scene {
 
 		} else {
 
+			this.scale.resize(352, 352)
+			tg.MainButton.onClick(async () => {
+				tg.MainButton.setText('...saving')
+				await this.updatePlayerField(this.player.id, JSON.stringify(this.player.playerField))
+				tg.close()
+			})
+
 			this.renderFirstMap()
-			this.input.on('pointerup', async function (pointer) {
+			this.input.on('pointerup', function (pointer) {
 				const tile = this.map.getTileAtWorldXY(pointer.worldX, pointer.worldY, undefined, undefined, 'ships')
 				if (!tile) {
 					return
@@ -80,7 +86,6 @@ export default class GameScene extends Phaser.Scene {
 					tg.MainButton.hide()
 				}
 
-				// this.updatePlayerField(this.player.id, JSON.stringify(this.player.playerField))
 			}, this)
 		}
 	}
