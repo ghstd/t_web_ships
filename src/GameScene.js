@@ -27,8 +27,8 @@ export default class GameScene extends Phaser.Scene {
 	preload() {
 		this.load.image('scales', '/scales.png')
 		this.load.image('objects', '/objects.png')
-		this.load.tilemapTiledJSON('map_1', '/map.json')
-		this.load.tilemapTiledJSON('map_2', '/map.json')
+		this.load.tilemapTiledJSON('map_1', '/map_1.json')
+		this.load.tilemapTiledJSON('map_2', '/map_2.json')
 	}
 
 	async create() {
