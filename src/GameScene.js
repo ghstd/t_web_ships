@@ -78,12 +78,14 @@ export default class GameScene extends Phaser.Scene {
 			const map = this.make.tilemap({ key: 'map_1' })
 			const scalesTileset = map.addTilesetImage('scales')
 			const objectsTileset = map.addTilesetImage('objects')
+			console.log('objectsTileset', objectsTileset)
 			map.createLayer('scales', scalesTileset)
 
 			const playerFieldArr = this.player.playerField.map((row) => row.map((i) => i + 1))
 
 			const playerFieldLayer = map.createBlankLayer('ships', objectsTileset)
-			playerFieldLayer.putTilesAt(playerFieldArr, 1, 1)
+			const ships = playerFieldLayer.putTilesAt(playerFieldArr, 1, 1)
+			console.log('ships', ships)
 
 			this.input.on('pointerup', function (pointer) {
 				const tile = map.getTileAtWorldXY(pointer.worldX, pointer.worldY)
