@@ -1,4 +1,5 @@
 import Phaser from 'phaser'
+import { checkField } from './helpers/checkField'
 
 const URL = 'https://tel-server-firebase.onrender.com'
 
@@ -15,7 +16,7 @@ const translateTemplate = [
 	['J1', 'J2', 'J3', 'J4', 'J5', 'J6', 'J7', 'J8', 'J9', 'J10']
 ]
 
-const tg = window.Telegram.WebApp
+// const tg = window.Telegram.WebApp
 
 export default class GameScene extends Phaser.Scene {
 	constructor() {
@@ -32,10 +33,64 @@ export default class GameScene extends Phaser.Scene {
 	}
 
 	async create() {
-		const id = tg.initDataUnsafe.user?.id
-		if (!id) {
+		this.player = await this.getPlayer()
+		if (!this.player) {
+			console.log('no player')
 			return
 		}
+
+		if (this.player.ready) {
+
+			this.renderSecondMap()
+			this.input.on('pointerup', function (pointer) {
+				const tile = this.map.getTileAtWorldXY(pointer.worldX, pointer.worldY, undefined, undefined, 'targets')
+				if (!tile) {
+					return
+				}
+				const result = translateTemplate[tile.y - 1][tile.x - 1]
+				console.log('result', result)
+				// this.sendCoord(result)
+			}, this)
+
+		} else {
+
+			this.renderFirstMap()
+			this.input.on('pointerup', async function (pointer) {
+				const tile = this.map.getTileAtWorldXY(pointer.worldX, pointer.worldY, undefined, undefined, 'ships')
+				if (!tile) {
+					return
+				}
+
+				if (this.player.playerField[tile.y - 1][tile.x - 1] === 0) {
+					this.player.playerField[tile.y - 1][tile.x - 1] = 1
+					this.map.putTileAtWorldXY(122, pointer.worldX, pointer.worldY)
+				} else {
+					this.player.playerField[tile.y - 1][tile.x - 1] = 0
+					this.map.putTileAtWorldXY(121, pointer.worldX, pointer.worldY)
+				}
+
+				if (checkField(this.player.playerField).correct) {
+					tg.MainButton.setText('сохранить?')
+					tg.MainButton.show()
+				} else {
+					tg.MainButton.hide()
+				}
+
+				// this.updatePlayerField(this.player.id, JSON.stringify(this.player.playerField))
+			}, this)
+		}
+	}
+
+
+
+	async getPlayer() {
+		// const id = tg.initDataUnsafe.user?.id
+		const id = 545166583
+
+		if (!id) {
+			return null
+		}
+
 		try {
 			const response = await fetch(`${URL}/dbGetPlayerByUserId`, {
 				method: 'POST',
@@ -44,72 +99,71 @@ export default class GameScene extends Phaser.Scene {
 				},
 				body: JSON.stringify({ id })
 			})
-			this.player = await response.json()
+			return await response.json()
 		} catch (error) {
-			console.log('fetch player in preload: ', error)
+			console.log('fetch player: ', error)
 		}
 
 		if (this.player.noData) {
 			console.log('create - player.noData: ', player.noData)
-			return
-		}
-
-		if (this.player.ready) {
-			console.log('ready', this.player.ready)
-
-			const map = this.make.tilemap({ key: 'map_2' })
-			const scalesTileset = map.addTilesetImage('scales')
-			const objectsTileset = map.addTilesetImage('objects')
-			map.createLayer('scales', scalesTileset)
-
-			const targetFieldArr = this.player.targetField.map((row) => row.map((i) => i + 1))
-
-			const targetFieldLayer = map.createBlankLayer('targets', objectsTileset)
-			targetFieldLayer.putTilesAt(targetFieldArr, 1, 1)
-
-			const playerFieldArr = this.player.playerField.map((row) => row.map((i) => i + 1))
-
-			const playerFieldLayer = map.createBlankLayer('ships', objectsTileset)
-			playerFieldLayer.putTilesAt(playerFieldArr, 11, 1)
-
-		} else {
-			console.log('ready', this.player.ready)
-
-			const map = this.make.tilemap({ key: 'map_1' })
-			const scalesTileset = map.addTilesetImage('scales')
-			const objectsTileset = map.addTilesetImage('objects')
-			console.log('objectsTileset', objectsTileset)
-			map.createLayer('scales', scalesTileset)
-
-			const playerFieldArr = this.player.playerField.map((row) => row.map((i) => i + 1))
-
-			const playerFieldLayer = map.createBlankLayer('ships', objectsTileset)
-			const ships = playerFieldLayer.putTilesAt(playerFieldArr, 1, 1)
-			console.log('ships', ships)
-
-			this.input.on('pointerup', function (pointer) {
-				const tile = map.getTileAtWorldXY(pointer.worldX, pointer.worldY)
-				const result = translateTemplate[tile.y - 1][tile.x - 1]
-				console.log(result)
-
-				// fetch('https://tebot.netlify.app/.netlify/functions/bot', {
-				// 	method: 'POST',
-				// 	headers: {
-				// 		"Content-Type": "application/json"
-				// 	},
-				// 	body: JSON.stringify({
-				// 		myMark: 'webapp',
-				// 		id: tg.initDataUnsafe.query_id,
-				// 		result
-				// 	})
-				// })
-			}, this)
-
+			return null
 		}
 	}
 
-	update(time, dt) {
-
+	async updatePlayerField(id, playerField) {
+		try {
+			const response = await fetch(`${URL}/dbUpdatePlayerField`, {
+				method: 'POST',
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: { id, playerField }
+			})
+			return await response.json()
+		} catch (error) {
+			console.log('updatePlayerField: ', error)
+		}
 	}
 
+	renderFirstMap() {
+		this.map = this.make.tilemap({ key: 'map_1' })
+		const scales = this.map.addTilesetImage('scales')
+		const objects = this.map.addTilesetImage('objects')
+		this.map.createLayer('scales', scales)
+
+		const playerArr = this.player.playerField.map((row) => row.map((i) => i + 121))
+		const playerField = this.map.createBlankLayer('ships', [scales, objects])
+		playerField.putTilesAt(playerArr, 1, 1)
+	}
+
+	renderSecondMap() {
+		this.map = this.make.tilemap({ key: 'map_2' })
+		const scales = this.map.addTilesetImage('scales')
+		const objects = this.map.addTilesetImage('objects')
+		this.map.createLayer('scales', scales)
+
+		const targetArr = this.player.targetField.map((row) => row.map((i) => i + 121))
+		const targetField = this.map.createBlankLayer('targets', [scales, objects])
+		targetField.putTilesAt(targetArr, 1, 1)
+
+		const playerArr = this.player.playerField.map((row) => row.map((i) => i + 121))
+		const playerField = this.map.createBlankLayer('ships', [scales, objects])
+		playerField.putTilesAt(playerArr, 1, 13)
+	}
+
+	sendCoord(data) {
+		fetch('https://tebot.netlify.app/.netlify/functions/bot', {
+			method: 'POST',
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+				myMark: 'webapp',
+				id: tg.initDataUnsafe.query_id,
+				result: data
+			})
+		})
+	}
+
+	update() { }
 }
