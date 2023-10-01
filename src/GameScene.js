@@ -47,9 +47,9 @@ export default class GameScene extends Phaser.Scene {
 			console.log('fetch player in preload: ', error)
 		}
 
-		console.log('player in create', this.player)
-		if (!this.player.data) {
-			console.log('no player data')
+		if (this.player.noData) {
+			console.log('create - player.noData: ', player.noData)
+			return
 		}
 
 		if (this.player.ready) {
