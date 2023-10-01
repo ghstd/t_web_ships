@@ -78,7 +78,7 @@ export default class GameScene extends Phaser.Scene {
 			const map = this.make.tilemap({ key: 'map_1' })
 			const scalesTileset = map.addTilesetImage('scales')
 			const objectsTileset = map.addTilesetImage('objects')
-			map.createLayer('background', scalesTileset)
+			map.createLayer('scales', scalesTileset)
 
 			const playerFieldArr = this.player.playerField.map((row) => row.map((i) => i + 1))
 
