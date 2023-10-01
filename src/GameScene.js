@@ -44,14 +44,13 @@ export default class GameScene extends Phaser.Scene {
 		if (this.player.ready) {
 
 			this.renderSecondMap()
-			this.input.on('pointerup', function (pointer) {
+			this.input.on('pointerup', async function (pointer) {
 				const tile = this.map.getTileAtWorldXY(pointer.worldX, pointer.worldY, undefined, undefined, 'targets')
 				if (!tile) {
 					return
 				}
 				const result = translateTemplate[tile.y - 1][tile.x - 1]
-				console.log('result', result)
-				// this.sendCoord(result)
+				await this.sendCoord(result)
 			}, this)
 
 		} else {
@@ -61,6 +60,7 @@ export default class GameScene extends Phaser.Scene {
 			tg.MainButton.onClick(async () => {
 				tg.MainButton.setText('...')
 				await this.updatePlayerField(this.player.id, JSON.stringify(this.player.playerField))
+				await this.sendCoord('**')
 				tg.close()
 			})
 
@@ -162,18 +162,22 @@ export default class GameScene extends Phaser.Scene {
 		playerField.putTilesAt(playerArr, 1, 13)
 	}
 
-	sendCoord(data) {
-		fetch('https://tebot.netlify.app/.netlify/functions/bot', {
-			method: 'POST',
-			headers: {
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify({
-				myMark: 'webapp',
-				id: tg.initDataUnsafe.query_id,
-				result: data
+	async sendCoord(data) {
+		try {
+			return await fetch('https://tebot.netlify.app/.netlify/functions/bot', {
+				method: 'POST',
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({
+					myMark: 'webapp',
+					id: tg.initDataUnsafe.query_id,
+					result: data
+				})
 			})
-		})
+		} catch (error) {
+			console.log('sendCoord', error)
+		}
 	}
 
 	update() { }
