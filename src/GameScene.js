@@ -128,7 +128,9 @@ export default class GameScene extends Phaser.Scene {
 				},
 				body: { id, playerField }
 			})
-			return await response.json()
+			const result = await response.json()
+			console.log('result', result)
+			return result
 		} catch (error) {
 			console.log('updatePlayerField: ', error)
 		}
